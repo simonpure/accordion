@@ -15,6 +15,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <style>
+    .panel-title {
+      font-size: 36px;
+    }
+    p {
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
 
@@ -25,13 +33,13 @@
 <script id="panel-template" type="text/x-handlebars-template">
   <div class="panel panel-default">
     <div class="panel-heading" data-toggle="collapse" data-target="#panel{{@index}}">
-      <h4 class="panel-title">
+      <h1 class="panel-title text-center">
         {{title}}
-      </h4>
+      </h1>
     </div>
     <div id="panel{{@index}}" class="panel-collapse collapse {{expand @index}}">
       <div class="panel-body">
-        {{body}}
+        <p>{{body}}</p>
       </div>
     </div>
   </div>
@@ -40,7 +48,7 @@
 <script id="list-template" type="text/x-handlebars-template">
   <div class="panel panel-default">
     <div class="panel-heading" data-toggle="collapse" data-target="#panel{{@index}}">
-      <h4 class="panel-title">
+      <h4 class="panel-title text-center">
         {{title}}
       </h4>
     </div>
