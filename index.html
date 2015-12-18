@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div id="container">
+</div>
+
+<!-- Templates -->
+<script id="panel-template" type="text/x-handlebars-template">
+  <div class="panel panel-default">
+    <div class="panel-heading" data-toggle="collapse" data-target="#panel{{@index}}">
+      <h4 class="panel-title">
+        {{title}}
+      </h4>
+    </div>
+    <div id="panel{{@index}}" class="panel-collapse collapse {{expand @index}}">
+      <div class="panel-body">
+        {{body}}
+      </div>
+    </div>
+  </div>
+</script>
+
+<script id="list-template" type="text/x-handlebars-template">
+  <div class="panel panel-default">
+    <div class="panel-heading" data-toggle="collapse" data-target="#panel{{@index}}">
+      <h4 class="panel-title">
+        {{title}}
+      </h4>
+    </div>
+    <div id="panel{{@index}}" class="panel-collapse collapse {{expand @index}}">
+      <div class="panel-body">
+        <ul class="list-group">
+          {{#each items}}
+            <li class="list-group-item">{{this}}</li>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script id="main-template" type="text/x-handlebars-template">
+  <div class="alert alert-success alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    {{info}}
+  </div>
+  <div class="panel-group" id="accordion">
+    {{#each panels}}
+      {{> (chooseTemplate)}}
+    {{/each}}
+  </div>
+</script>
+
+<script type="text/javascript">
+  var context = {
+    info: "Welcome!",
+    panels: [
+      {
+        title: "My New Post",
+        body: "This is my first post!",
+        template: 'panel'
+      },
+      {
+        title: "Another Post",
+        body: "This is my second post!",
+        template: 'panel'
+      },
+      {
+        title: "I have a question",
+        body: "This is my second post!",
+        items: ["one", "two", "three"],
+        template: 'list'
+      }
+    ]
+  };
+</script>
+
+<script type="text/javascript">
+  Handlebars.registerHelper('chooseTemplate', function() {
+    return this.template + '-template';
+  });
+
+  Handlebars.registerHelper('expand', function(index) {
+    return index < 1 ? "in" : "";
+  });
+  var source = $("#main-template").html();
+  var partials = [
+      {name: "panel-template", html: $("#panel-template").html()},
+      {name: "list-template", html: $("#list-template").html()}
+  ];
+  var templates = partials.map(function (partial) { return Handlebars.registerPartial(partial.name, partial.html); });
+  var template = Handlebars.compile(source);
+  var html = template(context);
+  $('#container').html(html);
+</script>
+</body>
+</html>
