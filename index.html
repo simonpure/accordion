@@ -2,8 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -15,14 +13,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-  <style>
-    .panel-title {
-      font-size: 36px;
-    }
-    p {
-      font-size: 16px;
-    }
-  </style>
 </head>
 <body>
 
@@ -33,13 +23,21 @@
 <script id="panel-template" type="text/x-handlebars-template">
   <div class="panel panel-default">
     <div class="panel-heading" data-toggle="collapse" data-target="#panel{{@index}}">
-      <h1 class="panel-title text-center">
+      <h4 class="panel-title">
         {{title}}
-      </h1>
+      </h4>
     </div>
     <div id="panel{{@index}}" class="panel-collapse collapse {{expand @index}}">
       <div class="panel-body">
-        <p>{{body}}</p>
+        {{description}}
+
+        <form action="{{action}}" data-validator="{{validator}}">
+          {{#each modules}}
+            {{> (chooseTemplate)}}
+          {{/each}}
+
+          <button type="submit" class="next">Next</button>
+        </form>
       </div>
     </div>
   </div>
@@ -48,7 +46,7 @@
 <script id="list-template" type="text/x-handlebars-template">
   <div class="panel panel-default">
     <div class="panel-heading" data-toggle="collapse" data-target="#panel{{@index}}">
-      <h4 class="panel-title text-center">
+      <h4 class="panel-title">
         {{title}}
       </h4>
     </div>
@@ -65,23 +63,49 @@
 </script>
 
 <script id="main-template" type="text/x-handlebars-template">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="alert alert-success alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        {{info}}
-      </div>
-    </div>
+  <div class="alert alert-success alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    {{info}}
   </div>
   <div class="panel-group" id="accordion">
     {{#each panels}}
-      <div class="row">
-        <div class="col-md-12">
-          {{> (chooseTemplate)}}
-        </div>
-      </div>
+      {{> (chooseTemplate)}}
     {{/each}}
   </div>
+</script>
+
+<script id="input-template" type="text/x-handlebars-template">
+  <div class="form-group">
+    <label for="{{name}}">{{label}}</label>
+    <input type="{{type}}" class="form-control" data-validates-length="9" name="{{name}}" placeholder="{{placholder}}" />
+  </div>
+</script>
+
+<script id="link-template" type="text/x-handlebars-template">
+  <a href="{{url}}">{{name}}</a>
+</script>
+
+<script id="job-template" type="text/x-handlebars-template">
+  <div class="checkbox">
+    <label>
+      <img src="{{image}}" width="75" height="75" />
+      {{description}}
+      <input type="checkbox" name="{{name}}"> {{title}}
+    </label>
+  </div>
+</script>
+
+<script id="radio-template" type="text/x-handlebars-template">
+  <div class="checkbox">
+    <label>
+      {{title}}
+      <input type="radio" name="{{name}}" value="{{value}}"> {{description}}
+    </label>
+  </div>
+</script>
+
+<script id="error-template" type="text/x-handlebars-template">
+  <div class="alert alert-danger" role="alert">{{message}}</div>
 </script>
 
 <script type="text/javascript">
@@ -89,20 +113,116 @@
     info: "Welcome!",
     panels: [
       {
-        title: "My New Post",
-        body: "This is my first post!",
+        title: "Social",
+        description: "Add your social",
+        action: "/submit/ssn",
+        modules:[
+          {
+            label: "Add your SSN",
+            type: "input",
+            name: "ssn",
+            placeholder: "000-00-0000",
+            template: 'input'
+          },
+          {
+            url: 'http://google.com',
+            name: 'Google',
+            template: 'link'
+          },
+          {
+            url: 'http://yahoo.com',
+            name: 'Yahoo',
+            template: 'link'
+          },
+          {
+            url: 'http://twitter.com',
+            name: 'Twitter',
+            template: 'link'
+          }
+        ],
         template: 'panel'
       },
       {
-        title: "Another Post",
-        body: "This is my second post!",
+        title: "Jobs",
+        description: "Select a job",
+        action: "/submit/jobs",
+        validator: "jobs",
+        modules:[
+          {
+            title: 'Postmates',
+            image: 'https://pbs.twimg.com/profile_images/615529697225523200/Z_CrdVi0_400x400.png',
+            description: 'join Postmates!!!',
+            name: 'postmates',
+            template: 'job'
+          },
+          {
+            title: 'Uber',
+            image: 'https://pbs.twimg.com/profile_images/616424605218025472/qISsGgP9_400x400.png',
+            description: 'join Uber!!!',
+            name: 'uber',
+            template: 'job'
+          },
+          {
+            url: 'http://google.com',
+            name: 'Google',
+            template: 'link'
+          },
+          {
+            url: 'http://yahoo.com',
+            name: 'Yahoo',
+            template: 'link'
+          },
+          {
+            url: 'http://twitter.com',
+            name: 'Twitter',
+            template: 'link'
+          }
+        ],
         template: 'panel'
       },
       {
-        title: "I have a question",
-        body: "This is my second post!",
-        items: ["one", "two", "three"],
-        template: 'list'
+        title: "Onboarding",
+        description: "Select an orientation time",
+        action: "/submit/orientation-time",
+        modules:[
+          {
+            title: 'Monday',
+            description: '3pm',
+            name: 'orientation',
+            value: 'monday',
+            template: 'radio'
+          },
+          {
+            title: 'Wednesday',
+            description: '2pm',
+            name: 'orientation',
+            value: 'wednesday',
+            template: 'radio'
+          },
+          {
+            title: 'Friday',
+            description: '3pm',
+            name: 'orientation',
+            value: 'friday',
+            template: 'radio'
+          },
+          {
+            url: 'http://google.com',
+            name: 'Google',
+            template: 'link'
+          },
+          {
+            url: 'http://yahoo.com',
+            name: 'Yahoo',
+            template: 'link'
+          },
+          {
+            url: 'http://twitter.com',
+            name: 'Twitter',
+            template: 'link'
+          }
+        ],
+        template: 'panel'
       }
     ]
   };
@@ -119,12 +239,80 @@
   var source = $("#main-template").html();
   var partials = [
       {name: "panel-template", html: $("#panel-template").html()},
-      {name: "list-template", html: $("#list-template").html()}
+      {name: "list-template", html: $("#list-template").html()},
+      {name: "input-template", html: $("#input-template").html()},
+      {name: "link-template", html: $("#link-template").html()},
+      {name: "job-template", html: $("#job-template").html()},
+      {name: "radio-template", html: $("#radio-template").html()},
+      {name: "error-template", html: $("#error-template").html()}
   ];
   var templates = partials.map(function (partial) { return Handlebars.registerPartial(partial.name, partial.html); });
   var template = Handlebars.compile(source);
   var html = template(context);
-  $('#container').html(html);
+  var container = $('#container');
+  container.html(html);
+
+  //Event Listeners
+  var is_valid = true;
+  var validation_message = "";
+  container.on('click','.next',function(e){
+    e.preventDefault();
+    var elem = $(this);
+    var form = elem.parents('form').first();
+    var panel = elem.parents('.panel').first();
+    var next = panel.next('.panel');
+    var data = form.serialize();
+    panel.addClass('panel-success');
+
+
+    panel.find('input').each(function(e){
+      var elem = $(this);
+      if(elem.data('validates-length')){
+        if(elem.data('validates-length') != elem.val().length){
+          console.log('not valid');
+          var parent = elem.parents('.form-group').first();
+          parent.addClass('has-error');
+          //var label = parent.find('label').text();
+          parent.find('label').text("SSN (must have "+elem.data('validates-length')+" characters)");
+          is_valid = false;
+        }
+      }
+    });
+
+    if(form.data('validator')){
+      validator.jobs(form);
+    }
+
+    if(is_valid){
+      panel.find('.panel-collapse').collapse('toggle');
+      next.find('.panel-collapse').collapse('toggle');
+      console.log(data);
+    }else{
+      var parent = elem.parents('.form-group').first();
+      parent.addClass('has-error');
+      var source = $("#error-template").html();
+      var template = Handlebars.compile(source);
+      var html = template({message:validation_message});
+      panel.append(html);
+    }
+  });
+</script>
+
+<script>
+  var validator = {
+    jobs: function(form){
+      console.log('validating jobs');
+      var jobs_checked = form.find('input:checked').length;
+      if(jobs_checked > 5){
+        is_valid = false;
+        validation_message = "You can only select 5 jobs."
+      }
+      if(jobs_checked < 1){
+        is_valid = false;
+        validation_message = "You must select at least 1 job."
+      }
+    }
+  }
 </script>
 </body>
 </html>
